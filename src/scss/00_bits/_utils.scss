@@ -1,0 +1,74 @@
+@function rem($pixels) {
+  @return ($pixels / 16px * 1rem);
+}
+
+// Spacing
+@function spacing($multiplier: 1) {
+  @return rem($base_spacing * $multiplier);
+}
+
+@mixin sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0px;
+  position: absolute;
+  width: 1px;
+}
+
+@mixin hover {
+  [data-whatinput="keyboard"] &:focus,
+  &:hover,
+  &:active,
+  &.active,
+  &.-active,
+  &.-focused,
+  &[aria-expanded="true"] {
+    @content;
+  }
+}
+
+@mixin gradient ($left, $right){
+  background: $right;
+  background: linear-gradient(to right, $left 0%, $right 100%);
+}
+
+@mixin gradient-to-bottom ($top, $bottom){
+  background: $bottom;
+  background: linear-gradient(to bottom, $top 0%, $bottom 100%);
+}
+
+@mixin magicBox($perc:35) {
+  position: relative;
+  padding-bottom: $perc * 1%;
+  height: 0;
+}
+
+// Clearfix
+@mixin group {
+  zoom: 1;
+  &::before {
+    display: table;
+    content: "";
+  }
+  &::after {
+    display: table;
+    content: "";
+    clear: both;
+  }
+}
+
+// Breakpoints
+@mixin bp($breakpoint) {
+  @media(max-width: map-get($breakpoints, $breakpoint)/16 * 1em) {
+    @content;
+  }
+}
+
+@mixin bpMin($breakpoint) {
+  @media(min-width: (map-get($breakpoints, $breakpoint) + 1)/16 * 1em) {
+    @content;
+  }
+}

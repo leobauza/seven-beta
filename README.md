@@ -1,3 +1,9 @@
+## Symlink contracts because create-react-app says so
+
+`cd src`
+
+`ln -s ../build/contracts contracts`
+
 ## Using Truffle Console
 
 `truffle console`
@@ -7,7 +13,7 @@ SimpleStorage.deployed() // return the deployed contract...
 .then(function(instance) {
   return instance.set(7); // call a method of the contract...
 }).then(function(value) {
-  return value.toString();
+  return value;
 });
 ```
 
@@ -23,7 +29,7 @@ SimpleStorage.deployed()
 Copy Paste Friendly:
 
 ```js
-SimpleStorage.deployed().then(function(instance) {return instance.set(7);}).then(function(value) {return value.toString();});
+SimpleStorage.deployed().then(function(instance) {return instance.set(2);}).then(function(value) {return value;});
 
 // and
 

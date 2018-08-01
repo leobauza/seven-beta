@@ -1,0 +1,77 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  text-rendering: optimizelegibility;
+}
+
+h1 {
+ font-size: rem($h1);
+ line-height: rem($h1-line-height);
+}
+
+h2 {
+ font-size: rem($h2);
+ line-height: rem($h2-line-height);
+}
+
+h3 {
+ font-size: rem($h3);
+ line-height: rem($h3-line-height);
+}
+
+h4 {
+ font-size: rem($h4);
+ line-height: rem($h4-line-height);
+}
+
+h5 {
+ font-size: rem($h5);
+ line-height: rem($h5-line-height);
+}
+
+h6 {
+ font-size: rem($h6);
+ line-height: rem($h6-line-height);
+}
+
+p {
+  font-size: rem($text-size);
+  line-height: rem($text-line-height);
+  padding: 0 0 spacing();
+  color: black;
+  margin: 0;
+}
+
+small {
+  font-size: rem($misc-size);
+  line-height: rem($misc-line-height);
+}
+
+strong, b {
+  font-weight: $bold-weight;
+}
+
+em, i {
+  font-style: italic;
+}
+
+a {
+  @include hover {
+    color: black;
+  }
+}
+
+pre {
+  margin: 0px;
+  white-space: pre-wrap;
+  font-family: $code;
+}
+
+code {
+  font-family: $code;
+  padding: rem(2px) rem(4px);
+}

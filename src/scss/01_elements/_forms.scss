@@ -1,0 +1,37 @@
+/**
+ * 01_elements/forms
+ * Forms module
+ */
+
+form {}
+
+label, input, textarea, select, button {
+}
+
+label {
+  display: block;
+  margin-bottom: spacing();
+}
+
+select,
+textarea,
+input {
+  color: $text;
+  display: block;
+  font-size: rem($text-size);
+  line-height: rem($text-line-height);
+  margin-bottom: spacing();
+  padding: spacing(.25);
+
+  &::placeholder {
+    color: $border;
+  }
+
+  &::-webkit-credentials-auto-fill-button,
+  &::-webkit-contacts-auto-fill-button {
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    visibility: hidden;
+  }
+}

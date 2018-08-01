@@ -1,0 +1,15 @@
+.btn {
+  appearance: none;
+  border: 1px solid $border;
+  color: $text;
+  cursor: pointer;
+  display: inline-block;
+  font-size: rem($misc-size);
+  line-height: 1;
+  padding: rem(12px) rem(28px) rem(10px);
+  text-align: center;
+
+  @include hover {
+    background: $alt-background;
+  }
+}

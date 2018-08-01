@@ -1,0 +1,62 @@
+/**
+ * 00_bits/vars
+ * Vars module
+ * Contains the grid, colours, and typography variables.
+ */
+
+// spacing
+$base-spacing: 20px;
+$max-width: 1200px;
+
+$breakpoints: (
+  'huge': $max-width,
+  'large': 1024,
+  'medium': 900,
+  'small': 600,
+  'tiny': 375
+) !default;
+
+$brand: blue;
+$alt-background: #f5f5f5;
+$text: #2d2d2d;
+$border: #ededed;
+
+// focus
+$focus-border: rgba(82, 168, 236, 0.8);
+
+// typography
+$sans-serif: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+$serif: Argent, "Georgia", "Times New Roman", Times, serif;
+$display: $sans-serif;
+$code: Menlo, Monaco, Consolas, "Courier New", monospace;
+
+$global-family: $sans-serif;
+
+$text-size: 16px;
+$text-line-height: 26px;
+$misc-size: 14px;
+$misc-line-height: 24px;
+
+$h1: 36px;
+$h1-line-height: 43px;
+$h2: 24px;
+$h2-line-height: 32px;
+$h3: 18px;
+$h3-line-height: 24px;
+$h4: 12px;
+$h4-line-height: 16px;
+$h5: 10px;
+$h5-line-height: 14px;
+$h6: 9px;
+$h6-line-height: 12px;
+
+$regular-weight: 400;
+$bold-weight: 700;
+
+$zindex: (
+  base: 1,
+  content: 10,
+  nav: 100,
+  modal: 200
+);
+/* end */

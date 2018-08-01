@@ -1,5 +1,15 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
+// 00 bits
+@import 'scss/00_bits/vars',
+        'scss/00_bits/utils';
+// 01 elements
+@import 'scss/01_elements/reset',
+        // '01_elements/lists',
+        'scss/01_elements/typography',
+        'scss/01_elements/forms';
+        // '01_elements/tables';
+// 02 items
+@import 'scss/02_items/buttons';
+// 03 collections
+// 04 sections
+// 05 layouts
+@import 'scss/05_layouts/page';
