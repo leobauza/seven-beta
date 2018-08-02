@@ -1,12 +1,48 @@
+## Get Started
+
+You will need [Truffle](https://truffleframework.com/) and [Ganache](https://truffleframework.com/ganache)
+
+To install truffle globally first make sure you are using the right node version:
+
+```bash
+nvm use
+```
+
+```bash
+npm install -g truffle
+```
+
+Install your deps so compilations work:
+
+```
+yarn
+```
+
+Make sure Ganache is running and then compile and migrate the contracts:
+
+```bash
+truffle compile
+truffle migrate
+```
+
+Symlink contracts because create-react-app says so and there is no gosh
+
+```bash
+cd node_modules
+ln -s ../build/contracts contracts
+```
+
+You did it, you can now start the webserver
+
+```
+yarn start
+```
+
+When you run into issues pray and tell yourself everything will be alright
+
 ## MetaMask Common Issues
 
 - When in doubt go to Settings > Reset Account
-
-## Symlink contracts because create-react-app says so
-
-`cd node_modules`
-
-`ln -s ../build/contracts contracts`
 
 ## Using Truffle Console
 
