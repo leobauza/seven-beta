@@ -75,3 +75,8 @@ code {
   font-family: $code;
   padding: rem(2px) rem(4px);
 }
+
+// @TODO move to better spots
+.heading {
+  margin-bottom: spacing();
+}

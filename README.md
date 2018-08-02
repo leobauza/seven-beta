@@ -1,6 +1,10 @@
+## MetaMask Common Issues
+
+- When in doubt go to Settings > Reset Account
+
 ## Symlink contracts because create-react-app says so
 
-`cd src`
+`cd node_modules`
 
 `ln -s ../build/contracts contracts`
 

@@ -6,10 +6,25 @@
   display: inline-block;
   font-size: rem($misc-size);
   line-height: 1;
+  margin-bottom: spacing();
   padding: rem(12px) rem(28px) rem(10px);
   text-align: center;
 
+  &.-without-margin {
+    margin: 0;
+  }
+
   @include hover {
     background: $alt-background;
+  }
+}
+
+.btn-group {
+  .btn {
+    margin-right: spacing(.5);
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 }
