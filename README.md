@@ -75,3 +75,7 @@ SimpleStorage.deployed().then(function(instance) {return instance.set(2);}).then
 
 SimpleStorage.deployed().then(function(instance) {return instance.get.call();}).then(function(value) {return value.toString()});
 ```
+
+## Testing
+
+Yeah right...
