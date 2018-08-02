@@ -38,10 +38,14 @@ You did it, you can now start the webserver
 yarn start
 ```
 
+You will need MetaMask. From the network dropdown choose Custom RPC and enter the RPC server displayed in Ganache. You can also use the Mnemonic from Ganache as the seed to view your accounts.
+
 When you run into issues pray and tell yourself everything will be alright
 
 ## MetaMask Common Issues
 
+- Did you choose the right network?
+- Did you enter your mnemonic for the most recent time you restarted Ganache?
 - When in doubt go to Settings > Reset Account
 
 ## Using Truffle Console
