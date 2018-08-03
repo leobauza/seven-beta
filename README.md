@@ -80,6 +80,14 @@ SimpleStorage.deployed().then(function(instance) {return instance.set(2);}).then
 SimpleStorage.deployed().then(function(instance) {return instance.get.call();}).then(function(value) {return value.toString()});
 ```
 
+## What is actually happening (ie. The Stack)
+
+I need to wrap my head around working in Ethereum so hopefully writing it down helps.
+
+### Front End
+
+- React App 
+
 ## Testing
 
 Yeah right...

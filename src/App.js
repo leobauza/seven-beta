@@ -6,6 +6,13 @@ import TestZepContract from 'contracts/TestZep.json'
 import getWeb3 from './utils/getWeb3'
 import contract from 'truffle-contract'
 
+// @TODO
+// - [ ] Detect changing accounts via MetaMask?
+// - [ ] How to develop with websockets...I think this requires switching to using
+// geth or parity or both or maybe ganache-cli? No idea at the moment (backburner)
+// - [ ] Split into multiple components
+// - [ ] Split into multiple routes
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -161,7 +168,7 @@ class App extends Component {
       })
   }
 
-  checkTestZepBalance = e => {
+  updateTestZepBalance = e => {
     const { eth, utils } = this.web3
 
     this.testZep
@@ -185,7 +192,10 @@ class App extends Component {
     if (!canClaimTestZep) {
       return
     }
-    // if this address is a payee then call claim
+    // if this address is a payee then call claim...
+    // @TODO
+    // - [ ] Add check to see if there is anything for them to claim (perhaps
+    // tied to calculating gas cost?)
     this.testZep
       .deployed()
       .then(instance => {
@@ -228,7 +238,7 @@ class App extends Component {
           <p>This is a test of the SplitPayment Open Zeppelin Contract. Accounts 1 and 2 Should be able to Claim their share of Ether. Any other account only send ether to the contract.</p>
           <p>TestZep Latest Balance: {testZepBalance}</p>
           <div className="btn-group">
-            <button onClick={this.checkTestZepBalance} className="btn" type="button">Update TestZep Balance (testZepBalance)</button>
+            <button onClick={this.updateTestZepBalance} className="btn" type="button">Update TestZep Balance (testZepBalance)</button>
             <button onClick={this.sendEtherToTestZep} className="btn" type="button">Send .05 ETH to TestZepContract</button>
             {canClaimTestZep && (
               <button onClick={this.claimEtherFromTestZep} className="btn" type="button">Claim Your Share of Ether</button>

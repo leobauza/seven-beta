@@ -16,6 +16,7 @@ label {
 select,
 textarea,
 input {
+  border: 1px solid $border;
   color: $text;
   display: block;
   font-size: rem($text-size);
