@@ -33,7 +33,7 @@ class App extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     getWeb3
       .then(results => {
         this.web3 = results.web3

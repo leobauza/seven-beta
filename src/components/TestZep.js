@@ -3,17 +3,13 @@ import TestZepContract from 'contracts/TestZep.json'
 import contract from 'truffle-contract'
 
 export default class TestZep extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      balance: 0,
-      canClaim: false,
-      instance: null
-    }
+  state = {
+    balance: 0,
+    canClaim: false,
+    instance: null
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.instantiateContract().then(instance => {
       this.setState({
         instance
@@ -54,7 +50,7 @@ export default class TestZep extends Component {
     return instance
   }
 
-  sendEtherToTestZep = async e => {
+  sendEtherToTestZep = e => {
     const { instance } = this.state
     const { accounts, web3 } = this.props
     const { eth, utils } = web3
@@ -83,7 +79,7 @@ export default class TestZep extends Component {
     })
   }
 
-  updateTestZepBalance = async e => {
+  updateTestZepBalance = e => {
     const { eth, utils } = this.props.web3
     const { instance } = this.state
 
