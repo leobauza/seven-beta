@@ -12,6 +12,11 @@ import contract from 'truffle-contract'
 // geth or parity or both or maybe ganache-cli? No idea at the moment (backburner)
 // - [ ] Split into multiple components
 // - [ ] Split into multiple routes
+// - [x] Do a random JSONRPC test to understand what's going on...
+// - [ ] Consider using this.web3.eth.Contract instead of truffle contract for Web3 1.x.x
+// see: https://ethereum.stackexchange.com/questions/47206/difference-between-truffle-contract-and-web3-eth-contract
+// also see: https://github.com/upperwal/react-box/blob/master/src/App.js
+
 
 class App extends Component {
   constructor(props) {
@@ -160,10 +165,21 @@ class App extends Component {
           value: utils.toWei('.5', 'ether')
         }
 
-        eth.sendTransaction(transactionObject, (err, txHash) => {
-          if (!err) {
-            console.log('sendTransaction txHash', txHash)
-          }
+        eth.sendTransaction(transactionObject)
+        .on('confirmation', (conf, receipt) => {
+          eth.getBalance(instance.address, (err, balance) => {
+            if (!err) {
+              // Right now this gets set 25 times to the same value...WOMP
+              this.setState({
+                testZepBalance: utils.fromWei(balance, 'ether')
+              })
+            } else {
+              console.error(err)
+            }
+          })
+        })
+        .on('error', err => {
+          console.error('Tx Error', err)
         })
       })
   }
@@ -202,6 +218,8 @@ class App extends Component {
         return instance.claim({ from: this.accounts[0] })
       })
       .then(result => {
+        // @TODO
+        // - [ ] Update TestZepBalance here...
         console.log(result)
       })
       .catch(err => {

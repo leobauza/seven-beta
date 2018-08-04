@@ -84,9 +84,32 @@ SimpleStorage.deployed().then(function(instance) {return instance.get.call();}).
 
 I need to wrap my head around working in Ethereum so hopefully writing it down helps.
 
+### Ganache
+
+Ganache is just a local ethereum node with an RPC server @ http://127.0.0.1:7545
+
+### MetaMask's Role
+
+MetaMask injects their own provider (using the [provider engine](https://github.com/MetaMask/provider-engine)). They do this to intercept certain RPC calls for [example](https://github.com/MetaMask/provider-engine/blob/master/subproviders/hooked-wallet.js#L109), where they intercept the `sendTransaction` call and do their own signing and stuff on MetaMask.
+
+Also worth noting [this github comment](https://github.com/MetaMask/metamask-extension/issues/2350#issuecomment-374717425) explaining the state of things with subproviders and why MetaMask doesn't support websockets yet
+
 ### Front End
 
-- React App 
+React App connects to a web3 instance provided by MetaMask usually (`src/utils/getWeb3.js`). Though one could manually connect to the node like so:
+
+```js
+// RANDOM JSON RPC TEST
+// Create a web3 provider: the Ganache node (but this could be your own full node or whatever)
+const clientProvider = new Web3.providers.HttpProvider('http://127.0.0.1:7545')
+// Create a client using the given provider: this is gives us the abstractions
+// of the Javascript JSON RPC API (https://github.com/ethereum/wiki/wiki/JSON-RPC#javascript-api)
+const client = new Web3(clientProvider)
+// Use the abstractions to do stuff...
+client.eth.getAccounts().then(accounts => console.log(accounts))
+```
+
+Or somehow modify the above to use MetaMask's provider engine to do fancier stuff.
 
 ## Testing
 
