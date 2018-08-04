@@ -1,10 +1,18 @@
 import React, { Component, Fragment } from 'react'
 
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
+
 // ethereum specific
-import SimpleStorageContract from 'contracts/SimpleStorage.json'
 import TestZepContract from 'contracts/TestZep.json'
 import getWeb3 from './utils/getWeb3'
 import contract from 'truffle-contract'
+
+// components
+import StoreValue from './components/StoreValue'
 
 // @TODO
 // - [ ] Detect changing accounts via MetaMask?
@@ -17,7 +25,6 @@ import contract from 'truffle-contract'
 // see: https://ethereum.stackexchange.com/questions/47206/difference-between-truffle-contract-and-web3-eth-contract
 // also see: https://github.com/upperwal/react-box/blob/master/src/App.js
 
-
 class App extends Component {
   constructor(props) {
     super(props)
@@ -25,9 +32,9 @@ class App extends Component {
     this.simpleStorage = null
     this.testZep = null
     this.web3 = null
-    this.accounts = null
 
     this.state = {
+      accounts: null,
       isStoredValueUpdated: true,
       localValue: 0,
       storedValue: 0,
@@ -47,20 +54,27 @@ class App extends Component {
           .then(network => {
             console.log('network:', network)
           })
-        this.instantiateContracts()
+        this.instantiateAccounts()
       })
       .catch(() => {
         console.log('Error finding web3')
       })
   }
 
-  instantiateContracts() {
+  instantiateAccounts() {
 
     const { eth, utils, currentProvider } = this.web3
 
+    let tempAccountPlaceholder = null // erase when moving testZep to its own component
+
     eth.getAccounts((error, accounts) => {
       console.log('Active Accounts:', accounts)
-      this.accounts = accounts
+
+      tempAccountPlaceholder = accounts
+
+      this.setState({
+        accounts
+      })
 
       accounts.forEach(account => {
         eth.getBalance(account, (err, balance) => {
@@ -71,22 +85,6 @@ class App extends Component {
       })
 
     })
-
-    this.simpleStorage = contract(SimpleStorageContract)
-    this.simpleStorage.setProvider(currentProvider)
-
-    this.simpleStorage
-      .deployed()
-      .then(instance => {
-        return instance.get.call()
-      })
-      .then(result => {
-        return this.setState({
-          storedValue: result.c[0],
-          localValue: result.c[0],
-        })
-      })
-
 
     this.testZep = contract(TestZepContract)
     this.testZep.setProvider(currentProvider)
@@ -101,7 +99,7 @@ class App extends Component {
           this.setState({
             // FOR F'S SAKE https://www.quora.com/Is-an-Ethereum-Wallet-address-case-sensitive
             // WHY DO ADDRESSES COME WITH CAPITAL LETTERS SOMETIMES?@!
-            canClaimTestZep: p.indexOf(this.accounts[0].toLowerCase()) >= 0
+            canClaimTestZep: p.indexOf(tempAccountPlaceholder[0].toLowerCase()) >= 0
           })
         })
         instance.getShares().then(s => console.log('Shares:', s.c[0]))
@@ -117,50 +115,15 @@ class App extends Component {
       })
   }
 
-  setStoredValue(val) {
-    this.setState({ storedValue: val })
-  }
-
-  setLocalValue = e => {
-    this.setState({ localValue: e.target.value })
-  }
-
-  saveValueToBlockchain = e => {
-    e.preventDefault()
-
-    const { localValue, storedValue, isStoredValueUpdated } = this.state
-    let simpleStorageInstance = null
-
-    if (localValue === storedValue || !isStoredValueUpdated) {
-      return
-    }
-
-    this.simpleStorage
-      .deployed()
-      .then(instance => {
-        simpleStorageInstance = instance
-        this.setState({ isStoredValueUpdated: false })
-        return simpleStorageInstance.set(localValue, { from: this.accounts[0] })
-      })
-      .then(result => {
-        return simpleStorageInstance.get.call()
-      })
-      .then(result => {
-        return this.setState({
-          storedValue: result.c[0],
-          isStoredValueUpdated: true,
-        })
-      })
-  }
-
   sendEtherToTestZep = e => {
     const { eth, utils } = this.web3
+    const { accounts } = this.state
 
     this.testZep
       .deployed()
       .then(instance => {
         const transactionObject = {
-          from: this.accounts[0],
+          from: accounts[0],
           to: instance.address,
           value: utils.toWei('.5', 'ether')
         }
@@ -203,7 +166,7 @@ class App extends Component {
   }
 
   claimEtherFromTestZep = e => {
-    const { canClaimTestZep } = this.state
+    const { accounts, canClaimTestZep } = this.state
 
     if (!canClaimTestZep) {
       return
@@ -215,7 +178,7 @@ class App extends Component {
     this.testZep
       .deployed()
       .then(instance => {
-        return instance.claim({ from: this.accounts[0] })
+        return instance.claim({ from: accounts[0] })
       })
       .then(result => {
         // @TODO
@@ -228,42 +191,42 @@ class App extends Component {
   }
 
   render() {
-    const { storedValue, localValue, isStoredValueUpdated, testZepBalance, canClaimTestZep } = this.state
+    const { accounts, testZepBalance, canClaimTestZep } = this.state
     return (
-      <Fragment>
-        <header className="container">
-          <h1>Store A Value</h1>
-        </header>
-        <section className="container">
-          {!isStoredValueUpdated && <p>Updating...</p>}
-          <p>
-            Stored value is: <strong>{storedValue}</strong>
-          </p>
-          <form onSubmit={this.saveValueToBlockchain}>
-            <label htmlFor="stored-value">Change Stored Value</label>
-            <input
-              id="stored-value"
-              type="number"
-              onChange={this.setLocalValue}
-              value={localValue}
-            />
-            <button className="btn" type="submit">
-              Store Value
-            </button>
-          </form>
+      <Router>
+        <Fragment>
+          <header className="container">
+            <h1>My dApps</h1>
 
-          <h2 className="heading">TestZep Contract</h2>
-          <p>This is a test of the SplitPayment Open Zeppelin Contract. Accounts 1 and 2 Should be able to Claim their share of Ether. Any other account only send ether to the contract.</p>
-          <p>TestZep Latest Balance: {testZepBalance}</p>
-          <div className="btn-group">
-            <button onClick={this.updateTestZepBalance} className="btn" type="button">Update TestZep Balance (testZepBalance)</button>
-            <button onClick={this.sendEtherToTestZep} className="btn" type="button">Send .05 ETH to TestZepContract</button>
-            {canClaimTestZep && (
-              <button onClick={this.claimEtherFromTestZep} className="btn" type="button">Claim Your Share of Ether</button>
-            )}
-          </div>
-        </section>
-      </Fragment>
+            {accounts ? (
+              <ul>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/store-value">Store Value</Link></li>
+              </ul>
+            ) : (<p>Accounts are Loading!</p>)}
+          </header>
+          <section className="container">
+
+            <h2 className="heading">TestZep Contract</h2>
+            <p>This is a test of the SplitPayment Open Zeppelin Contract. Accounts 1 and 2 Should be able to Claim their share of Ether. Any other account only send ether to the contract.</p>
+            <p>TestZep Latest Balance: {testZepBalance}</p>
+            <div className="btn-group">
+              <button onClick={this.updateTestZepBalance} className="btn" type="button">Update TestZep Balance (testZepBalance)</button>
+              <button onClick={this.sendEtherToTestZep} className="btn" type="button">Send .05 ETH to TestZepContract</button>
+              {canClaimTestZep && (
+                <button onClick={this.claimEtherFromTestZep} className="btn" type="button">Claim Your Share of Ether</button>
+              )}
+            </div>
+
+            {accounts ? (
+              <Route
+                path='/store-value'
+                render={(props) => <StoreValue {...props} accounts={accounts} web3={this.web3} />}
+              />
+            ) : (<p>Accounts Are Loading!</p>)}
+          </section>
+        </Fragment>
+      </Router>
     )
   }
 }
