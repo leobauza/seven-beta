@@ -1,0 +1,12 @@
+.site-nav {
+  ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+
+  a {
+    font-weight: $bold-weight;
+    padding: spacing(.25);
+  }
+}

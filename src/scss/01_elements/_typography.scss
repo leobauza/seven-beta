@@ -60,8 +60,10 @@ em, i {
 }
 
 a {
+  color: $brand;
+
   @include hover {
-    color: black;
+    color: $brand-light;
   }
 }
 
@@ -74,6 +76,11 @@ pre {
 code {
   font-family: $code;
   padding: rem(2px) rem(4px);
+}
+
+ul,
+ol {
+  margin: 0;
 }
 
 // @TODO move to better spots
