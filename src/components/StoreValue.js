@@ -25,7 +25,6 @@ export default class StoreValue extends Component {
     const simpleStorage = contract(SimpleStorageContract)
     simpleStorage.setProvider(currentProvider)
     const instance = await simpleStorage.deployed()
-
     const result = await instance.get.call()
 
     this.setState({

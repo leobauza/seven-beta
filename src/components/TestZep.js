@@ -17,6 +17,20 @@ export default class TestZep extends Component {
     })
   }
 
+  async componentDidUpdate(prevProps) {
+    const { accounts } = this.props
+    const { instance } = this.state
+
+    if (!instance || accounts === prevProps.accounts) {
+      return
+    }
+
+    const payees = await instance.getPayees()
+    this.setState({
+      canClaim: payees.indexOf(accounts[0]) >= 0
+    })
+  }
+
   async instantiateContract() {
     const { accounts, web3 } = this.props
     const { eth, utils, currentProvider } = web3
@@ -25,18 +39,12 @@ export default class TestZep extends Component {
     testZep.setProvider(currentProvider)
 
     const instance = await testZep.deployed()
+    const payees = await instance.getPayees()
 
     console.log('TestZepContract Address:', instance.address)
     instance.released('0x824dc428405f9914c38f82d695cb1fdca2e9f69d').then(tr => console.log('Released', tr.c[0]))
-    instance.getPayees().then(p => {
-      console.log('Payees:', p)
-      this.setState({
-        // FOR F'S SAKE https://www.quora.com/Is-an-Ethereum-Wallet-address-case-sensitive
-        // WHY DO ADDRESSES COME WITH CAPITAL LETTERS SOMETIMES?@!
-        canClaim: p.indexOf(accounts[0].toLowerCase()) >= 0
-      })
-    })
     instance.getShares().then(s => console.log('Shares:', s.c[0]))
+
     eth.getBalance(instance.address, (err, balance) => {
       if (!err) {
         this.setState({
@@ -47,6 +55,10 @@ export default class TestZep extends Component {
       }
     })
 
+    console.log('Payees:', payees)
+    this.setState({
+      canClaim: payees.indexOf(accounts[0]) >= 0
+    })
     return instance
   }
 

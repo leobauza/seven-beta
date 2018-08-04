@@ -12,7 +12,7 @@ import {
 } from 'react-router-dom'
 
 // @TODO
-// - [ ] Detect changing accounts via MetaMask?
+// - [x] Detect changing accounts via MetaMask?
 // - [ ] How to develop with websockets...I think this requires switching to using
 // geth or parity or both or maybe ganache-cli? No idea at the moment (backburner)
 // - [x] Split into multiple components
@@ -51,14 +51,21 @@ class App extends Component {
   }
 
   instantiateAccounts() {
+    const { eth, utils, currentProvider } = this.web3
 
-    const { eth, utils } = this.web3
+    currentProvider.publicConfigStore.on('update', this.updateAccount);
 
+    // @TODO this is only getting one account...why not all the accounts I have?
+    // (probably something to do with the way metamask provide-engine handles
+    // this stuff
     eth.getAccounts((error, accounts) => {
+      // FOR F'S SAKE https://www.quora.com/Is-an-Ethereum-Wallet-address-case-sensitive
+      // WHY DO ADDRESSES COME WITH CAPITAL LETTERS SOMETIMES?@!
+      accounts = accounts.map(a => a.toLowerCase())
       console.log('Active Accounts:', accounts)
 
       this.setState({
-        accounts
+        accounts: accounts
       })
 
       accounts.forEach(account => {
@@ -70,6 +77,19 @@ class App extends Component {
       })
 
     })
+  }
+
+  updateAccount = ({selectedAddress}) => {
+    const { accounts } = this.state
+    selectedAddress = selectedAddress.toLowerCase()
+    if (selectedAddress !== accounts[0]) {
+      console.log('change accounts!')
+      console.log(selectedAddress)
+      console.log(accounts[0])
+      this.setState({
+        accounts: [selectedAddress].concat(accounts.slice(1))
+      })
+    }
   }
 
   render() {
