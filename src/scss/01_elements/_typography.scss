@@ -105,3 +105,65 @@ ol {
 .highlight {
   background: $highlight;
 }
+
+.notice {
+  @include fixed;
+  align-items: center;
+  background: $alt-background;
+  border-bottom: 1px solid $border;
+  display: flex;
+  justify-content: space-between;
+  padding: spacing(.5) spacing();
+
+  &[aria-hidden] {
+    display: none;
+  }
+
+  p {
+    font-size: rem($misc-size);
+    line-height: rem($misc-line-height);
+    padding: 0;
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: rem($h1);
+    font-weight: $bold-weight;
+    line-height: rem($h1);
+    padding: spacing();
+    position: relative;
+
+    i {
+      @include sr-only;
+    }
+
+    &::before,
+    &::after {
+      background: black;
+      content: "";
+      display: block;
+      height: 4px;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      width: 20px;
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    &::before {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    @include hover {
+      &::before,
+      &::after {
+        background: $text;
+      }
+    }
+  }
+}

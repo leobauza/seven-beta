@@ -60,6 +60,13 @@
   }
 }
 
+@mixin fixed($top: 0, $left: 0, $width: 100%) {
+  left: $left;
+  position: fixed;
+  top: $top;
+  width: $width;
+}
+
 // Breakpoints
 @mixin bp($breakpoint) {
   @media(max-width: map-get($breakpoints, $breakpoint)/16 * 1em) {

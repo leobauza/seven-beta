@@ -61,7 +61,7 @@ export default class TestZep extends Component {
         // totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
         // - [x] Display these values
         // - [x] Determine whether current account can claim
-        // - [ ] Prevent errors in claiming before claiming...
+        // - [x] Prevent errors in claiming before claiming...
         // - [ ] Should all calculations be done with bigNumbers? Should they be done on the contract?
         // Total Ever Received TIMES Percentage of Shares = Share of Total Ever Received
         // THEN Shares of Total Ever Received MINUS what has already been taken
@@ -94,6 +94,7 @@ export default class TestZep extends Component {
   }
 
   sendEtherToTestZep = () => {
+    // @TODO set a notice that something is happening...
     const { instance } = this.state
     const { accounts, web3 } = this.props
     const { eth, utils } = web3

@@ -7,13 +7,13 @@ export default class StoreValue extends Component {
     instance: null,
     isStoredValueUpdated: true,
     localValue: 0,
-    storedValue: 0,
+    storedValue: 0
   }
 
   componentDidMount() {
     this.instantiateContract().then(instance => {
       this.setState({
-        instance,
+        instance
       })
     })
   }
@@ -28,7 +28,7 @@ export default class StoreValue extends Component {
 
     this.setState({
       storedValue: result.c[0],
-      localValue: result.c[0],
+      localValue: result.c[0]
     })
 
     return instance
@@ -42,15 +42,15 @@ export default class StoreValue extends Component {
     this.setState({ storedValue: val })
   }
 
-  saveValueToBlockchain = e => {
+  saveValueToBlockchain = async e => {
     e.preventDefault()
 
-    const { accounts } = this.props
+    const { accounts, setNotice } = this.props
     const {
       localValue,
       storedValue,
       isStoredValueUpdated,
-      instance,
+      instance
     } = this.state
 
     if (localValue === storedValue || !isStoredValueUpdated) {
@@ -58,14 +58,17 @@ export default class StoreValue extends Component {
     }
 
     this.setState({ isStoredValueUpdated: false })
-    instance.set(localValue, { from: accounts[0] }).then(async () => {
-      const result = await instance.get.call()
+    setNotice(<p>Storing value on the blockchain</p>)
+    const tx = await instance.set(localValue, { from: accounts[0] })
 
+    if (tx.receipt) {
+      const result = await instance.get.call()
+      setNotice(<p>Value {localValue} has been stored!</p>)
       this.setState({
         storedValue: result.c[0],
-        isStoredValueUpdated: true,
+        isStoredValueUpdated: true
       })
-    })
+    }
   }
 
   render() {
@@ -73,14 +76,13 @@ export default class StoreValue extends Component {
       storedValue,
       localValue,
       isStoredValueUpdated,
-      instance,
+      instance
     } = this.state
 
     if (instance) {
       return (
         <Fragment>
           <h2 className="heading">Store A Value</h2>
-          {!isStoredValueUpdated && <p>Updating...</p>}
           <p>
             Stored value is: <strong>{storedValue}</strong>
           </p>
@@ -92,9 +94,11 @@ export default class StoreValue extends Component {
               onChange={this.setLocalValue}
               value={localValue}
             />
-            <button className="btn" type="submit">
-              Store Value
-            </button>
+            {isStoredValueUpdated && (
+              <button className="btn" type="submit">
+                Store Value
+              </button>
+            )}
           </form>
         </Fragment>
       )

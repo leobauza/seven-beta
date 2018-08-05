@@ -7,7 +7,7 @@ import getWeb3 from './utils/getWeb3'
 import StoreValue from './components/StoreValue'
 import TestZep from './components/TestZep'
 import Home from './components/Home'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 
 // @TODO
 // - [x] Detect changing accounts via MetaMask?
@@ -29,7 +29,8 @@ class App extends Component {
     this.state = {
       accounts: null,
       balance: 0,
-      network: null
+      network: null,
+      notice: null
     }
   }
 
@@ -104,11 +105,27 @@ class App extends Component {
     }
   }
 
+  setNotice = notice => {
+    this.setState({
+      notice
+    })
+  }
+
   render() {
-    const { accounts, balance, network } = this.state
+    const { accounts, balance, network, notice } = this.state
     return (
       <Router>
         <Fragment>
+          <aside
+            aria-hidden={notice ? undefined : 'true'}
+            aria-live="polite"
+            className="notice"
+          >
+            {notice}
+            <button onClick={() => this.setNotice(null)} type="button">
+              <i>Close</i>
+            </button>
+          </aside>
           <header className="container">
             <h1 className="heading">
               My dApps <code className="small">{accounts && accounts[0]}</code>
@@ -125,13 +142,19 @@ class App extends Component {
               {accounts ? (
                 <ul>
                   <li>
-                    <Link to="/">Home</Link>
+                    <NavLink exact activeClassName="-active" to="/">
+                      Home
+                    </NavLink>
                   </li>
                   <li>
-                    <Link to="/test-zep">Deposit/Claim</Link>
+                    <NavLink activeClassName="-active" to="/store-value">
+                      Store Value
+                    </NavLink>
                   </li>
                   <li>
-                    <Link to="/store-value">Store Value</Link>
+                    <NavLink activeClassName="-active" to="/test-zep">
+                      Deposit/Claim
+                    </NavLink>
                   </li>
                 </ul>
               ) : (
@@ -151,6 +174,7 @@ class App extends Component {
                       {...props}
                       accounts={accounts}
                       web3={this.web3}
+                      setNotice={this.setNotice}
                     />
                   )}
                 />
