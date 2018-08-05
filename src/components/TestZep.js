@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react'
 import TestZepContract from 'contracts/TestZep.json'
 import contract from 'truffle-contract'
 
+const ETH = 'Ξ'
+
 export default class TestZep extends Component {
   state = {
     balance: 0,
@@ -49,52 +51,38 @@ export default class TestZep extends Component {
     const shares0 = await instance.shares(payees[0])
     const shares1 = await instance.shares(payees[1])
 
-    console.log('Total Shares:', shares.c[0])
-    console.log(`Released for ${payees[0]}`, released0.c[0])
-    console.log(`Released for ${payees[1]}`, released1.c[0])
-    console.log(`Shares for ${payees[0]}`, shares0.c[0])
-    console.log(`Shares for ${payees[1]}`, shares1.c[0])
-    console.log('TestZepContract Address:', instance.address)
-
-    eth.getBalance(instance.address, (err, balance) => {
+    eth.getBalance(instance.address, async (err, balance) => {
       if (!err) {
-        const totalReceived = balance
+        // @TODO this is WRONG! it should be total EVER received BALANCE + TOTAL RELEASED
+        const totalReleased = await instance.totalReleased()
+        const totalReceived = this.Ie(balance) + this.Ie(totalReleased)
 
         // @TODO this is the formula on the contract to determine payments:
         // totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
-        // - [ ] Display these values
-        // - [ ] Determine whether current account can claim
+        // - [x] Display these values
+        // - [x] Determine whether current account can claim
         // - [ ] Prevent errors in claiming before claiming...
+        // - [ ] Should all calculations be done with bigNumbers? Should they be done on the contract?
+        // Total Ever Received TIMES Percentage of Shares = Share of Total Ever Received
+        // THEN Shares of Total Ever Received MINUS what has already been taken
         const payee0Data = {
-          canClaimAmount: utils.fromWei(
-            `${(totalReceived * shares0.c[0]) / shares - released0.c[0]}`,
-            'ether'
-          )
+          address: payees[0],
+          canClaimAmount:
+            (totalReceived * shares0.c[0]) / shares.c[0] - this.Ie(released0)
         }
 
-        // Payee 0
-        console.log(
-          `next payment for ${payees[0]}`,
-          utils.fromWei(
-            `${(totalReceived * shares0.c[0]) / shares - released0.c[0]}`,
-            'ether'
-          )
-        )
-
-        // Payee 1
-        console.log(
-          `next payment for ${payees[1]}`,
-          utils.fromWei(
-            `${(totalReceived * shares1.c[0]) / shares - released1.c[0]}`,
-            'ether'
-          )
-        )
+        const payee1Data = {
+          address: payees[1],
+          canClaimAmount:
+            (totalReceived * shares1.c[0]) / shares.c[0] - this.Ie(released1)
+        }
 
         this.setState({
-          balance: utils.fromWei(balance, 'ether')
+          balance: utils.fromWei(balance, 'ether'),
+          payeeData: [payee0Data, payee1Data]
         })
       } else {
-        console.error(err)
+        console.error(err) // eslint-disable-line
       }
     })
 
@@ -105,7 +93,7 @@ export default class TestZep extends Component {
     return instance
   }
 
-  sendEtherToTestZep = e => {
+  sendEtherToTestZep = () => {
     const { instance } = this.state
     const { accounts, web3 } = this.props
     const { eth, utils } = web3
@@ -118,7 +106,7 @@ export default class TestZep extends Component {
 
     eth
       .sendTransaction(transactionObject)
-      .on('confirmation', (conf, receipt) => {
+      .on('confirmation', () => {
         eth.getBalance(instance.address, (err, balance) => {
           if (!err) {
             // Right now this gets set 25 times to the same value...WOMP
@@ -126,16 +114,16 @@ export default class TestZep extends Component {
               balance: utils.fromWei(balance, 'ether')
             })
           } else {
-            console.error(err)
+            console.error(err) // eslint-disable-line
           }
         })
       })
       .on('error', err => {
-        console.error('Tx Error', err)
+        console.error('Tx Error', err) // eslint-disable-line
       })
   }
 
-  updateTestZepBalance = e => {
+  updateTestZepBalance = () => {
     const { eth, utils } = this.props.web3
     const { instance } = this.state
 
@@ -145,12 +133,12 @@ export default class TestZep extends Component {
           balance: utils.fromWei(balance, 'ether')
         })
       } else {
-        console.error(err)
+        console.error(err) // eslint-disable-line
       }
     })
   }
 
-  claimEtherFromTestZep = async e => {
+  claimEtherFromTestZep = async () => {
     // @TODO
     // - [ ] Add check to see if there is anything for them to claim (perhaps
     // tied to calculating gas cost?)
@@ -165,14 +153,56 @@ export default class TestZep extends Component {
     try {
       // if this address is a payee then call claim...
       const claim = await instance.claim({ from: accounts[0] })
-      console.log(claim)
+      console.log(claim) // eslint-disable-line
     } catch (err) {
-      console.error('Claim was unssucesful I guess?', err)
+      console.error('Claim was unssucesful I guess?', err) // eslint-disable-line
     }
   }
 
+  // @TODO move to utils (use node_modules web3)
+  // In Ether
+  Ie(bigNumber) {
+    const { web3 } = this.props
+
+    if (typeof bigNumber !== 'string') {
+      bigNumber = bigNumber.toString()
+    }
+
+    return Number.parseFloat(web3.utils.fromWei(bigNumber, 'ether'))
+  }
+
+  renderPayeeData() {
+    const { accounts } = this.props
+    const { payeeData } = this.state
+
+    return (
+      <Fragment>
+        <h3 className="heading">Payee Addresses / Amounts they can claim</h3>
+        <ul>
+          {payeeData.map(data => {
+            return (
+              <li key={data.address}>
+                <strong
+                  className={
+                    data.address === accounts[0] ? 'highlight' : undefined
+                  }
+                >
+                  {data.address}
+                </strong>
+                :{' '}
+                <code>
+                  {data.canClaimAmount} {ETH}
+                </code>
+              </li>
+            )
+          })}
+        </ul>
+      </Fragment>
+    )
+  }
+
   render() {
-    const { balance, canClaim, instance } = this.state
+    const { balance, canClaim, instance, payeeData } = this.state
     const numberBalance = Number.parseFloat(balance) // so we can use `toFixed`
 
     if (instance) {
@@ -184,8 +214,19 @@ export default class TestZep extends Component {
             1 and 2 Should be able to Claim their share of Ether. Any other
             account only send ether to the contract.
           </p>
+
+          <h3 className="heading">Can Current Address Claim?</h3>
           <p>
-            TestZep Latest Balance: <code>{balance} Ξ</code>
+            <strong className="highlight">{canClaim ? 'YES' : 'NO'}</strong>
+          </p>
+
+          {payeeData && this.renderPayeeData()}
+
+          <h3 className="heading">Balance in Contract:</h3>
+          <p>
+            <code>
+              {balance} {ETH}
+            </code>
           </p>
           <div className="btn-group">
             <button
@@ -193,14 +234,18 @@ export default class TestZep extends Component {
               className="btn"
               type="button"
             >
-              Update TestZep Balance (<code>{numberBalance.toFixed(2)} Ξ</code>)
+              Update TestZep Balance (
+              <code>
+                {numberBalance.toFixed(2)} {ETH}
+              </code>
+              )
             </button>
             <button
               onClick={this.sendEtherToTestZep}
               className="btn"
               type="button"
             >
-              Send <code>0.05 Ξ</code> to TestZepContract
+              Send <code>0.05 {ETH}</code> to TestZepContract
             </button>
             {canClaim && (
               <button

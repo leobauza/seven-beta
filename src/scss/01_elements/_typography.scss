@@ -81,7 +81,15 @@ code {
 
 ul,
 ol {
-  margin: 0;
+  margin: 0 0 spacing();
+
+  li {
+    margin: 0 0 spacing(.5);
+
+    &:last-child {
+      margin: 0;
+    }
+  }
 }
 
 // @TODO move to better spots
@@ -92,4 +100,8 @@ ol {
 .small {
   font-size: rem($misc-size);
   line-height: $misc-line-height;
+}
+
+.highlight {
+  background: $highlight;
 }

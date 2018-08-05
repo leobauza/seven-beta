@@ -25,7 +25,7 @@ class App extends Component {
     this.web3 = null
 
     this.state = {
-      accounts: null,
+      accounts: null
     }
   }
 
@@ -69,7 +69,7 @@ class App extends Component {
       console.log('Active Accounts:', accounts)
 
       this.setState({
-        accounts: accounts,
+        accounts: accounts
       })
 
       accounts.forEach(account => {
@@ -90,7 +90,7 @@ class App extends Component {
       console.log('from:', accounts[0])
       console.log('to:', selectedAddress)
       this.setState({
-        accounts: [selectedAddress].concat(accounts.slice(1)),
+        accounts: [selectedAddress].concat(accounts.slice(1))
       })
     }
   }

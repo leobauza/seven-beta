@@ -19,4 +19,6 @@ contract TestZep is SplitPayment {
   function getShares() public view returns (uint256) {
     return totalShares;
   }
+
+  // @TODO add some simple maths things to test .add .mul .div .sub etc...
 }
