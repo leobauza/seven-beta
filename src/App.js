@@ -5,11 +5,7 @@ import getWeb3 from './utils/getWeb3'
 import StoreValue from './components/StoreValue'
 import TestZep from './components/TestZep'
 import Home from './components/Home'
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 
 // @TODO
 // - [x] Detect changing accounts via MetaMask?
@@ -38,11 +34,9 @@ class App extends Component {
       .then(results => {
         this.web3 = results.web3
 
-        this.web3.eth.net
-          .getNetworkType()
-          .then(network => {
-            console.log('network:', network)
-          })
+        this.web3.eth.net.getNetworkType().then(network => {
+          console.log('network:', network)
+        })
         this.instantiateAccounts()
       })
       .catch(() => {
@@ -60,7 +54,10 @@ class App extends Component {
     const { eth, utils, currentProvider } = this.web3
     currentProvider.publicConfigStore.on('update', this.updateAccount)
 
-    console.log('currentProvider.publicConfigStore:', currentProvider.publicConfigStore)
+    console.log(
+      'currentProvider.publicConfigStore:',
+      currentProvider.publicConfigStore
+    )
 
     // @TODO this is only getting one account...why not all the accounts I have?
     // (probably something to do with the way metamask provide-engine handles
@@ -72,7 +69,7 @@ class App extends Component {
       console.log('Active Accounts:', accounts)
 
       this.setState({
-        accounts: accounts
+        accounts: accounts,
       })
 
       accounts.forEach(account => {
@@ -85,7 +82,7 @@ class App extends Component {
     })
   }
 
-  updateAccount = ({selectedAddress}) => {
+  updateAccount = ({ selectedAddress }) => {
     const { accounts } = this.state
     selectedAddress = selectedAddress.toLowerCase()
     if (selectedAddress !== accounts[0]) {
@@ -93,7 +90,7 @@ class App extends Component {
       console.log('from:', accounts[0])
       console.log('to:', selectedAddress)
       this.setState({
-        accounts: [selectedAddress].concat(accounts.slice(1))
+        accounts: [selectedAddress].concat(accounts.slice(1)),
       })
     }
   }
@@ -104,34 +101,53 @@ class App extends Component {
       <Router>
         <Fragment>
           <header className="container">
-            <h1 className="heading">My dApps <code className="small">{accounts && accounts[0]}</code></h1>
+            <h1 className="heading">
+              My dApps <code className="small">{accounts && accounts[0]}</code>
+            </h1>
 
             <nav className="site-nav">
               {accounts ? (
                 <ul>
-                  <li><Link to="/">Home</Link></li>
-                  <li><Link to="/test-zep">Deposit/Claim</Link></li>
-                  <li><Link to="/store-value">Store Value</Link></li>
+                  <li>
+                    <Link to="/">Home</Link>
+                  </li>
+                  <li>
+                    <Link to="/test-zep">Deposit/Claim</Link>
+                  </li>
+                  <li>
+                    <Link to="/store-value">Store Value</Link>
+                  </li>
                 </ul>
-              ) : (<p>Accounts are Loading!</p>)}
+              ) : (
+                <p>Accounts are Loading!</p>
+              )}
             </nav>
           </header>
           <section className="container">
-
             {/* Wait until accounts are available... */}
             {accounts ? (
               <Fragment>
-                <Route exact path="/" component={Home}/>
+                <Route exact path="/" component={Home} />
                 <Route
-                  path='/store-value'
-                  render={(props) => <StoreValue {...props} accounts={accounts} web3={this.web3} />}
+                  path="/store-value"
+                  render={props => (
+                    <StoreValue
+                      {...props}
+                      accounts={accounts}
+                      web3={this.web3}
+                    />
+                  )}
                 />
                 <Route
-                  path='/test-zep'
-                  render={(props) => <TestZep {...props} accounts={accounts} web3={this.web3} />}
+                  path="/test-zep"
+                  render={props => (
+                    <TestZep {...props} accounts={accounts} web3={this.web3} />
+                  )}
                 />
               </Fragment>
-            ) : (<p>Accounts Are Loading!</p>)}
+            ) : (
+              <p>Accounts Are Loading!</p>
+            )}
           </section>
         </Fragment>
       </Router>

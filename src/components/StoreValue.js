@@ -7,19 +7,18 @@ export default class StoreValue extends Component {
     instance: null,
     isStoredValueUpdated: true,
     localValue: 0,
-    storedValue: 0
+    storedValue: 0,
   }
 
   componentDidMount() {
     this.instantiateContract().then(instance => {
       this.setState({
-        instance
+        instance,
       })
     })
   }
 
   async instantiateContract() {
-
     const { currentProvider } = this.props.web3
 
     const simpleStorage = contract(SimpleStorageContract)
@@ -47,7 +46,12 @@ export default class StoreValue extends Component {
     e.preventDefault()
 
     const { accounts } = this.props
-    const { localValue, storedValue, isStoredValueUpdated, instance } = this.state
+    const {
+      localValue,
+      storedValue,
+      isStoredValueUpdated,
+      instance,
+    } = this.state
 
     if (localValue === storedValue || !isStoredValueUpdated) {
       return
@@ -65,10 +69,15 @@ export default class StoreValue extends Component {
   }
 
   render() {
-    const { storedValue, localValue, isStoredValueUpdated, instance } = this.state
+    const {
+      storedValue,
+      localValue,
+      isStoredValueUpdated,
+      instance,
+    } = this.state
 
     if (instance) {
-      return(
+      return (
         <Fragment>
           <h2 className="heading">Store A Value</h2>
           {!isStoredValueUpdated && <p>Updating...</p>}
@@ -90,7 +99,7 @@ export default class StoreValue extends Component {
         </Fragment>
       )
     } else {
-      return(
+      return (
         <div>
           <h2>Loading UI...</h2>
         </div>
