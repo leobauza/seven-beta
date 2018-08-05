@@ -50,10 +50,17 @@ class App extends Component {
       })
   }
 
+  componentWillUnmount() {
+    const { currentProvider } = this.web3
+    // Remove listeners to prvent memory leaks during HMRing
+    currentProvider.publicConfigStore.removeAllListeners()
+  }
+
   instantiateAccounts() {
     const { eth, utils, currentProvider } = this.web3
+    currentProvider.publicConfigStore.on('update', this.updateAccount)
 
-    currentProvider.publicConfigStore.on('update', this.updateAccount);
+    console.log('currentProvider.publicConfigStore:', currentProvider.publicConfigStore)
 
     // @TODO this is only getting one account...why not all the accounts I have?
     // (probably something to do with the way metamask provide-engine handles
@@ -75,7 +82,6 @@ class App extends Component {
           }
         })
       })
-
     })
   }
 
@@ -84,8 +90,8 @@ class App extends Component {
     selectedAddress = selectedAddress.toLowerCase()
     if (selectedAddress !== accounts[0]) {
       console.log('change accounts!')
-      console.log(selectedAddress)
-      console.log(accounts[0])
+      console.log('from:', accounts[0])
+      console.log('to:', selectedAddress)
       this.setState({
         accounts: [selectedAddress].concat(accounts.slice(1))
       })
@@ -98,7 +104,7 @@ class App extends Component {
       <Router>
         <Fragment>
           <header className="container">
-            <h1 className="heading">My dApps</h1>
+            <h1 className="heading">My dApps <code className="small">{accounts && accounts[0]}</code></h1>
 
             <nav className="site-nav">
               {accounts ? (

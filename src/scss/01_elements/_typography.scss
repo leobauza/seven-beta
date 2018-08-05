@@ -76,6 +76,7 @@ pre {
 code {
   font-family: $code;
   padding: rem(2px) rem(4px);
+  background: $alt-background;
 }
 
 ul,
@@ -86,4 +87,9 @@ ol {
 // @TODO move to better spots
 .heading {
   margin-bottom: spacing();
+}
+
+.small {
+  font-size: rem($misc-size);
+  line-height: $misc-line-height;
 }

@@ -40,13 +40,28 @@ export default class TestZep extends Component {
 
     const instance = await testZep.deployed()
     const payees = await instance.getPayees()
+    const shares = await instance.getShares()
+    const released0 = await instance.released(payees[0])
+    const released1 = await instance.released(payees[1])
+    const shares0 = await instance.shares(payees[0])
+    const shares1 = await instance.shares(payees[1])
 
+    console.log(`Released for ${payees[0]}`, released0.c[0])
+    console.log(`Released for ${payees[1]}`, released1.c[0])
+    console.log(`Shares for ${payees[0]}`, shares0.c[0])
+    console.log(`Shares for ${payees[1]}`, shares1.c[0])
     console.log('TestZepContract Address:', instance.address)
-    instance.released('0x824dc428405f9914c38f82d695cb1fdca2e9f69d').then(tr => console.log('Released', tr.c[0]))
-    instance.getShares().then(s => console.log('Shares:', s.c[0]))
+    console.log('Total Shares:', shares.c[0])
 
     eth.getBalance(instance.address, (err, balance) => {
       if (!err) {
+
+        const totalReceived = balance
+
+        // totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
+        console.log(`next payment for ${payees[0]}`, utils.fromWei(`${totalReceived * shares0.c[0] / shares - released0.c[0]}`, 'ether'))
+        console.log(`next payment for ${payees[1]}`, utils.fromWei(`${totalReceived * shares1.c[0] / shares - released1.c[0]}`, 'ether'))
+
         this.setState({
           balance: utils.fromWei(balance, 'ether')
         })
@@ -55,7 +70,6 @@ export default class TestZep extends Component {
       }
     })
 
-    console.log('Payees:', payees)
     this.setState({
       canClaim: payees.indexOf(accounts[0]) >= 0
     })
