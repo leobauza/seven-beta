@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import TestZepContract from 'contracts/TestZep.json'
 import contract from 'truffle-contract'
-
-const ETH = 'Ξ'
+import { ETH } from '../utils/constants'
+import { Ie } from '../utils/converters'
 
 export default class TestZep extends Component {
   state = {
@@ -55,7 +55,7 @@ export default class TestZep extends Component {
       if (!err) {
         // @TODO this is WRONG! it should be total EVER received BALANCE + TOTAL RELEASED
         const totalReleased = await instance.totalReleased()
-        const totalReceived = this.Ie(balance) + this.Ie(totalReleased)
+        const totalReceived = Ie(balance) + Ie(totalReleased)
 
         // @TODO this is the formula on the contract to determine payments:
         // totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
@@ -68,13 +68,13 @@ export default class TestZep extends Component {
         const payee0Data = {
           address: payees[0],
           canClaimAmount:
-            (totalReceived * shares0.c[0]) / shares.c[0] - this.Ie(released0)
+            (totalReceived * shares0.c[0]) / shares.c[0] - Ie(released0)
         }
 
         const payee1Data = {
           address: payees[1],
           canClaimAmount:
-            (totalReceived * shares1.c[0]) / shares.c[0] - this.Ie(released1)
+            (totalReceived * shares1.c[0]) / shares.c[0] - Ie(released1)
         }
 
         this.setState({
@@ -140,35 +140,30 @@ export default class TestZep extends Component {
 
   claimEtherFromTestZep = async () => {
     // @TODO
-    // - [ ] Add check to see if there is anything for them to claim (perhaps
+    // - [x] Add check to see if there is anything for them to claim (perhaps
     // tied to calculating gas cost?)
+    // - [ ] Update all values after claim...
 
     if (!this.state.canClaim) {
       return
     }
 
     const { accounts } = this.props
-    const { instance } = this.state
+    const { instance, payeeData } = this.state
+    const canClaimAmount = payeeData.filter(d => d.address === accounts[0])[0]
+      .canClaimAmount
 
-    try {
-      // if this address is a payee then call claim...
-      const claim = await instance.claim({ from: accounts[0] })
-      console.log(claim) // eslint-disable-line
-    } catch (err) {
-      console.error('Claim was unssucesful I guess?', err) // eslint-disable-line
+    if (canClaimAmount <= 0) {
+      alert('No new money for you to claim bruv...')
+    } else {
+      try {
+        // if this address is a payee then call claim...
+        const claim = await instance.claim({ from: accounts[0] })
+        console.log(claim) // eslint-disable-line
+      } catch (err) {
+        console.error('Claim was unssucesful I guess?', err) // eslint-disable-line
+      }
     }
-  }
-
-  // @TODO move to utils (use node_modules web3)
-  // In Ether
-  Ie(bigNumber) {
-    const { web3 } = this.props
-
-    if (typeof bigNumber !== 'string') {
-      bigNumber = bigNumber.toString()
-    }
-
-    return Number.parseFloat(web3.utils.fromWei(bigNumber, 'ether'))
   }
 
   renderPayeeData() {

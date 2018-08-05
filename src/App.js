@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react'
+import { Ie } from './utils/converters'
+import { ETH } from './utils/constants'
 // Web3
 import getWeb3 from './utils/getWeb3'
 // components
@@ -25,7 +27,9 @@ class App extends Component {
     this.web3 = null
 
     this.state = {
-      accounts: null
+      accounts: null,
+      balance: 0,
+      network: null
     }
   }
 
@@ -35,29 +39,24 @@ class App extends Component {
         this.web3 = results.web3
 
         this.web3.eth.net.getNetworkType().then(network => {
-          console.log('network:', network)
+          this.setState({ network })
         })
         this.instantiateAccounts()
       })
       .catch(() => {
-        console.log('Error finding web3')
+        console.error('Error finding web3') // eslint-disable-line
       })
   }
 
   componentWillUnmount() {
     const { currentProvider } = this.web3
-    // Remove listeners to prvent memory leaks during HMRing
+    // Remove listeners to prevent memory leaks during HMRing
     currentProvider.publicConfigStore.removeAllListeners()
   }
 
   instantiateAccounts() {
-    const { eth, utils, currentProvider } = this.web3
+    const { eth, currentProvider } = this.web3
     currentProvider.publicConfigStore.on('update', this.updateAccount)
-
-    console.log(
-      'currentProvider.publicConfigStore:',
-      currentProvider.publicConfigStore
-    )
 
     // @TODO this is only getting one account...why not all the accounts I have?
     // (probably something to do with the way metamask provide-engine handles
@@ -66,16 +65,15 @@ class App extends Component {
       // FOR F'S SAKE https://www.quora.com/Is-an-Ethereum-Wallet-address-case-sensitive
       // WHY DO ADDRESSES COME WITH CAPITAL LETTERS SOMETIMES?@!
       accounts = accounts.map(a => a.toLowerCase())
-      console.log('Active Accounts:', accounts)
-
-      this.setState({
-        accounts: accounts
-      })
 
       accounts.forEach(account => {
         eth.getBalance(account, (err, balance) => {
+          balance = Ie(balance)
           if (!err) {
-            console.log(account, utils.fromWei(balance, 'ether'))
+            this.setState({
+              accounts,
+              balance
+            })
           }
         })
       })
@@ -83,20 +81,31 @@ class App extends Component {
   }
 
   updateAccount = ({ selectedAddress }) => {
+    const { eth } = this.web3
     const { accounts } = this.state
-    selectedAddress = selectedAddress.toLowerCase()
+    const newAccount = [selectedAddress.toLowerCase()].concat(accounts.slice(1))
+
     if (selectedAddress !== accounts[0]) {
-      console.log('change accounts!')
-      console.log('from:', accounts[0])
-      console.log('to:', selectedAddress)
-      this.setState({
-        accounts: [selectedAddress].concat(accounts.slice(1))
+      console.log('change accounts!') // eslint-disable-line
+      console.log('from:', accounts[0]) // eslint-disable-line
+      console.log('to:', selectedAddress) // eslint-disable-line
+
+      newAccount.forEach(account => {
+        eth.getBalance(account, (err, balance) => {
+          balance = Ie(balance)
+          if (!err) {
+            this.setState({
+              accounts: newAccount,
+              balance
+            })
+          }
+        })
       })
     }
   }
 
   render() {
-    const { accounts } = this.state
+    const { accounts, balance, network } = this.state
     return (
       <Router>
         <Fragment>
@@ -104,7 +113,14 @@ class App extends Component {
             <h1 className="heading">
               My dApps <code className="small">{accounts && accounts[0]}</code>
             </h1>
-
+            <p>
+              <strong>Network: </strong>
+              <code className="small">{network}</code>{' '}
+              <strong>Balance: </strong>
+              <code className="small">
+                {balance} {ETH}
+              </code>
+            </p>
             <nav className="site-nav">
               {accounts ? (
                 <ul>
