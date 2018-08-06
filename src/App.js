@@ -4,6 +4,7 @@ import { ETH } from './utils/constants'
 // Web3
 import getWeb3 from './utils/getWeb3'
 // components
+import SevenTokens from './components/SevenTokens'
 import StoreValue from './components/StoreValue'
 import TestZep from './components/TestZep'
 import Home from './components/Home'
@@ -156,6 +157,11 @@ class App extends Component {
                       Deposit/Claim
                     </NavLink>
                   </li>
+                  <li>
+                    <NavLink activeClassName="-active" to="/seven-tokens">
+                      Seven ERC-721 Tokens
+                    </NavLink>
+                  </li>
                 </ul>
               ) : (
                 <p>Accounts are Loading!</p>
@@ -182,6 +188,16 @@ class App extends Component {
                   path="/test-zep"
                   render={props => (
                     <TestZep {...props} accounts={accounts} web3={this.web3} />
+                  )}
+                />
+                <Route
+                  path="/seven-tokens"
+                  render={props => (
+                    <SevenTokens
+                      {...props}
+                      accounts={accounts}
+                      web3={this.web3}
+                    />
                   )}
                 />
               </Fragment>

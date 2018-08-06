@@ -34,6 +34,10 @@ export default class TestZep extends Component {
     })
   }
 
+  componentWillUnmount() {
+    // @TODO unsubscribe from stuff or whatever
+  }
+
   async instantiateContract() {
     const { accounts, web3 } = this.props
     const { eth, utils, currentProvider } = web3
