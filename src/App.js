@@ -20,6 +20,9 @@ import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 // - [ ] Consider using this.web3.eth.Contract instead of truffle contract for Web3 1.x.x
 // see: https://ethereum.stackexchange.com/questions/47206/difference-between-truffle-contract-and-web3-eth-contract
 // also see: https://github.com/upperwal/react-box/blob/master/src/App.js
+// - [ ] Add SevenTokens functionality
+// - [ ] Write a contract only accepts an exact payment (https://ethereum.stackexchange.com/questions/30145/how-to-write-a-contract-that-can-only-accept-a-payment-of-fixed-amount)
+// - [ ] Find a way to transalte ETH to USD or native currency...
 
 class App extends Component {
   constructor(props) {

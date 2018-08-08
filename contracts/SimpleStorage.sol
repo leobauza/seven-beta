@@ -7,6 +7,12 @@ contract SimpleStorage {
     storedData = x;
   }
 
+  /**
+   * => view (modifier): for functions: Disallows modification of state [other
+   * modifiers include: pure, payable, constant, etc]
+   * => public (visibility): visible externally and internally
+   * => uint (type): unsigned integer
+   */
   function get() public view returns (uint) {
     return storedData;
   }

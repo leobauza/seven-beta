@@ -32,6 +32,8 @@ cd node_modules
 ln -s ../build/contracts contracts
 ```
 
+> Note: If you have restarted ganache and redeployed contracts you must delete `.cache` from `node_modules`. You must also delete the symlinked contracts and redo the symlink. Also, don't forget to restore your MetaMask with the new seed.
+
 You did it, you can now start the webserver
 
 ```
