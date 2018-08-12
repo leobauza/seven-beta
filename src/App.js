@@ -70,6 +70,7 @@ class App extends Component {
     const { eth, currentProvider } = this.web3
 
     if (currentProvider.publicConfigStore) {
+      // Triggers when switching accounts with MetaMask
       currentProvider.publicConfigStore.on('update', this.updateAccount)
     }
 

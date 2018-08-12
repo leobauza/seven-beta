@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react'
 import SimpleStorageContract from 'contracts/SimpleStorage.json'
-import contract from 'truffle-contract'
 
 export default class StoreValue extends Component {
   state = {
@@ -19,19 +18,28 @@ export default class StoreValue extends Component {
   }
 
   async instantiateContract() {
-    const { currentProvider } = this.props.web3
+    const { eth } = this.props.web3
 
-    const simpleStorage = contract(SimpleStorageContract)
-    simpleStorage.setProvider(currentProvider)
-    const instance = await simpleStorage.deployed()
-    const result = await instance.get.call()
+    // @TODO
+    // - [x] this breaks without MetaMask provider...definitely use
+    // web3.eth.Contract instead (I think it will fix stuff)
+    // see: https://github.com/trufflesuite/truffle-contract/issues/57
+    // - [ ] User real code to get network and contract address
+    const simpleStorage = new eth.Contract(
+      SimpleStorageContract.abi,
+      SimpleStorageContract.networks[5777].address
+    )
+
+    // simpleStorage.setProvider(currentProvider)
+    // const instance = await simpleStorage.deployed()
+    const result = await simpleStorage.methods.get().call()
 
     this.setState({
-      storedValue: result.c[0],
-      localValue: result.c[0]
+      storedValue: result,
+      localValue: result
     })
 
-    return instance
+    return simpleStorage
   }
 
   setLocalValue = e => {
@@ -59,13 +67,20 @@ export default class StoreValue extends Component {
 
     this.setState({ isStoredValueUpdated: false })
     setNotice(<p>Storing value on the blockchain</p>)
-    const tx = await instance.set(localValue, { from: accounts[0] })
+    const tx = await instance.methods
+      .set(localValue)
+      .send({ from: accounts[0] })
 
-    if (tx.receipt) {
-      const result = await instance.get.call()
-      setNotice(<p>Value {localValue} has been stored!</p>)
+    if (tx.transactionHash) {
+      const result = await instance.methods.get().call()
+
+      setNotice(
+        <p>
+          Value {localValue} has been stored! tx: {tx.transactionHash}
+        </p>
+      )
       this.setState({
-        storedValue: result.c[0],
+        storedValue: result,
         isStoredValueUpdated: true
       })
     }

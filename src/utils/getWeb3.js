@@ -19,6 +19,20 @@ const getWeb3 = new Promise(function(resolve) {
 
       resolve(results)
     } else {
+      /**
+       * Code for getting future MetaMask Ethereum provider on November 2nd
+       */
+      // Listen for provider injection
+      window.addEventListener('message', ({ data }) => {
+        if (data && data.type && data.type === 'ETHEREUM_PROVIDER_SUCCESS') {
+          // Use injected provider, start dapp...
+          console.log('MESSAGE', data) // eslint-disable-line
+          // web3 = new Web3(ethereum);
+        }
+      })
+      // Request provider
+      window.postMessage({ type: 'ETHEREUM_PROVIDER_REQUEST' }, '*')
+
       // Fallback to localhost if no web3 injection. We've configured this to
       // use the development console's port by default.
       let provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545')
