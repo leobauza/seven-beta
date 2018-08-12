@@ -46,6 +46,7 @@ class App extends Component {
         this.web3.eth.net.getNetworkType().then(network => {
           this.setState({ network })
         })
+
         this.instantiateAccounts()
       })
       .catch(() => {
@@ -54,14 +55,23 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+    if (!this.web3) {
+      return
+    }
+
     const { currentProvider } = this.web3
     // Remove listeners to prevent memory leaks during HMRing
-    currentProvider.publicConfigStore.removeAllListeners()
+    if (currentProvider.publicConfigStore) {
+      currentProvider.publicConfigStore.removeAllListeners()
+    }
   }
 
   instantiateAccounts() {
     const { eth, currentProvider } = this.web3
-    currentProvider.publicConfigStore.on('update', this.updateAccount)
+
+    if (currentProvider.publicConfigStore) {
+      currentProvider.publicConfigStore.on('update', this.updateAccount)
+    }
 
     // @TODO this is only getting one account...why not all the accounts I have?
     // (probably something to do with the way metamask provide-engine handles

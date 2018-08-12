@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 
-const getWeb3 = new Promise(function(resolve, reject) {
+const getWeb3 = new Promise(function(resolve) {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
   window.addEventListener('load', function() {
     let results
@@ -15,13 +15,13 @@ const getWeb3 = new Promise(function(resolve, reject) {
         web3: web3
       }
 
-      console.log('Injected web3 detected.');
+      console.log('Injected web3 detected.') // eslint-disable-line
 
       resolve(results)
     } else {
       // Fallback to localhost if no web3 injection. We've configured this to
       // use the development console's port by default.
-      let provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545')
+      let provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545')
 
       web3 = new Web3(provider)
 
@@ -29,7 +29,7 @@ const getWeb3 = new Promise(function(resolve, reject) {
         web3: web3
       }
 
-      console.log('No web3 instance injected, using Local web3.');
+      console.log('No web3 instance injected, using Local web3.') // eslint-disable-line
 
       resolve(results)
     }
