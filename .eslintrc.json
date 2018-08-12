@@ -4,7 +4,8 @@
     "es6": true
   },
   "globals": {
-    "it": true
+    "it": true,
+    "expect": true
   },
   "parser": "babel-eslint",
   "extends": "eslint:recommended",

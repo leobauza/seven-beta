@@ -46,10 +46,6 @@ export default class StoreValue extends Component {
     this.setState({ localValue: e.target.value })
   }
 
-  setStoredValue(val) {
-    this.setState({ storedValue: val })
-  }
-
   saveValueToBlockchain = async e => {
     e.preventDefault()
 
