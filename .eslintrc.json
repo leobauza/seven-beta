@@ -5,7 +5,10 @@
   },
   "globals": {
     "it": true,
-    "expect": true
+    "expect": true,
+    "artifacts": true,
+    "assert": true,
+    "contract": true
   },
   "parser": "babel-eslint",
   "extends": "eslint:recommended",
