@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react'
 import TestZepContract from 'contracts/TestZep.json'
-import contract from 'truffle-contract'
 import { ETH } from '../utils/constants'
 import { Ie } from '../utils/converters'
 
@@ -28,7 +27,7 @@ export default class TestZep extends Component {
       return
     }
 
-    const payees = await instance.getPayees()
+    const payees = await instance.methods.getPayees().call()
     this.setState({
       canClaim: payees.indexOf(accounts[0]) >= 0
     })
@@ -40,25 +39,34 @@ export default class TestZep extends Component {
 
   async instantiateContract() {
     const { accounts, web3 } = this.props
-    const { eth, utils, currentProvider } = web3
+    const { eth, utils } = web3
 
     // Create instance
-    const testZep = contract(TestZepContract)
-    testZep.setProvider(currentProvider)
-    const instance = await testZep.deployed()
+    // @TODO
+    // - [x] this breaks without MetaMask provider...definitely use
+    // web3.eth.Contract instead (I think it will fix stuff)
+    // see: https://github.com/trufflesuite/truffle-contract/issues/57
+    // - [ ] User real code to get network and contract address
+    const testZep = new eth.Contract(
+      TestZepContract.abi,
+      TestZepContract.networks[5777].address
+    )
 
     // Used for calculating payments and if account can claim payment
-    const payees = await instance.getPayees()
-    const shares = await instance.getShares()
-    const released0 = await instance.released(payees[0])
-    const released1 = await instance.released(payees[1])
-    const shares0 = await instance.shares(payees[0])
-    const shares1 = await instance.shares(payees[1])
+    let payees = await testZep.methods.getPayees().call()
+    const shares = await testZep.methods.getShares().call()
+    const released0 = await testZep.methods.released(payees[0]).call()
+    const released1 = await testZep.methods.released(payees[1]).call()
+    const shares0 = await testZep.methods.shares(payees[0]).call()
+    const shares1 = await testZep.methods.shares(payees[1]).call()
 
-    eth.getBalance(instance.address, async (err, balance) => {
+    // addresses transformed to lowercase to compare
+    payees = payees.map(p => p.toLowerCase())
+
+    eth.getBalance(testZep.options.address, async (err, balance) => {
       if (!err) {
-        // @TODO this is WRONG! it should be total EVER received BALANCE + TOTAL RELEASED
-        const totalReleased = await instance.totalReleased()
+        // Get total EVER received for calculations
+        const totalReleased = await testZep.methods.totalReleased().call()
         const totalReceived = Ie(balance) + Ie(totalReleased)
 
         // @TODO this is the formula on the contract to determine payments:
@@ -66,19 +74,15 @@ export default class TestZep extends Component {
         // - [x] Display these values
         // - [x] Determine whether current account can claim
         // - [x] Prevent errors in claiming before claiming...
-        // - [ ] Should all calculations be done with bigNumbers? Should they be done on the contract?
-        // Total Ever Received TIMES Percentage of Shares = Share of Total Ever Received
-        // THEN Shares of Total Ever Received MINUS what has already been taken
+        // - [ ] Should all calculations be done with bigNumbers? What even are big numbers
         const payee0Data = {
           address: payees[0],
-          canClaimAmount:
-            (totalReceived * shares0.c[0]) / shares.c[0] - Ie(released0)
+          canClaimAmount: (totalReceived * shares0) / shares - Ie(released0)
         }
 
         const payee1Data = {
           address: payees[1],
-          canClaimAmount:
-            (totalReceived * shares1.c[0]) / shares.c[0] - Ie(released1)
+          canClaimAmount: (totalReceived * shares1) / shares - Ie(released1)
         }
 
         this.setState({
@@ -94,7 +98,7 @@ export default class TestZep extends Component {
       canClaim: payees.indexOf(accounts[0]) >= 0
     })
 
-    return instance
+    return testZep
   }
 
   sendEtherToTestZep = () => {
@@ -105,14 +109,14 @@ export default class TestZep extends Component {
 
     const transactionObject = {
       from: accounts[0],
-      to: instance.address,
+      to: instance.options.address,
       value: utils.toWei('.5', 'ether')
     }
 
     eth
       .sendTransaction(transactionObject)
       .on('confirmation', () => {
-        eth.getBalance(instance.address, (err, balance) => {
+        eth.getBalance(instance.options.address, (err, balance) => {
           if (!err) {
             // Right now this gets set 25 times to the same value...WOMP
             this.setState({
@@ -132,7 +136,7 @@ export default class TestZep extends Component {
     const { eth, utils } = this.props.web3
     const { instance } = this.state
 
-    eth.getBalance(instance.address, (err, balance) => {
+    eth.getBalance(instance.options.address, (err, balance) => {
       if (!err) {
         this.setState({
           balance: utils.fromWei(balance, 'ether')
@@ -163,7 +167,7 @@ export default class TestZep extends Component {
     } else {
       try {
         // if this address is a payee then call claim...
-        const claim = await instance.claim({ from: accounts[0] })
+        const claim = await instance.methods.claim().send({ from: accounts[0] })
         console.log(claim) // eslint-disable-line
       } catch (err) {
         console.error('Claim was unssucesful I guess?', err) // eslint-disable-line
