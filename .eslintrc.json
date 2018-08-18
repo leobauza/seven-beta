@@ -4,11 +4,13 @@
     "es6": true
   },
   "globals": {
-    "it": true,
-    "expect": true,
     "artifacts": true,
     "assert": true,
-    "contract": true
+    "beforeAll": true,
+    "contract": true,
+    "describe": true,
+    "expect": true,
+    "it": true
   },
   "parser": "babel-eslint",
   "extends": "eslint:recommended",

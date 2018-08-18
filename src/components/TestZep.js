@@ -40,6 +40,7 @@ export default class TestZep extends Component {
   async instantiateContract() {
     const { accounts, web3 } = this.props
     const { eth, utils } = web3
+    const { BN, fromWei } = utils
 
     // Create instance
     // @TODO
@@ -69,12 +70,21 @@ export default class TestZep extends Component {
         const totalReleased = await testZep.methods.totalReleased().call()
         const totalReceived = Ie(balance) + Ie(totalReleased)
 
+        const bnBalance = new BN(balance)
+        const bnTotalReleased = new BN(totalReleased)
+        const bnTotalReceived = bnBalance.add(bnTotalReleased)
+
+        // @TODO use this...and move all calcs to big numbers
+        console.log(fromWei(bnTotalReceived))
+
         // @TODO this is the formula on the contract to determine payments:
         // totalReceived.mul(shares[payee]).div(totalShares).sub(released[payee]);
         // - [x] Display these values
         // - [x] Determine whether current account can claim
         // - [x] Prevent errors in claiming before claiming...
-        // - [ ] Should all calculations be done with bigNumbers? What even are big numbers
+        // - [ ] Calcs should be done in big numbers and shown as string.
+        // What even are big numbers?
+        // see: https://hackernoon.com/a-note-on-numbers-in-ethereum-and-javascript-3e6ac3b2fad9
         const payee0Data = {
           address: payees[0],
           canClaimAmount: (totalReceived * shares0) / shares - Ie(released0)

@@ -12,7 +12,6 @@ import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 
 // @TODO
 // - [x] Detect changing accounts via MetaMask?
-// - [ ] How to develop with websockets...I think this requires switching to using
 // geth or parity or both or maybe ganache-cli? No idea at the moment (backburner)
 // - [x] Split into multiple components
 // - [x] Split into multiple routes
@@ -20,11 +19,13 @@ import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 // - [x] Consider using this.web3.eth.Contract instead of truffle contract for Web3 1.x.x
 // see: https://ethereum.stackexchange.com/questions/47206/difference-between-truffle-contract-and-web3-eth-contract
 // also see: https://github.com/upperwal/react-box/blob/master/src/App.js
+// - [ ] Write components tests
+// - [ ] Write contract tests
+// - [ ] Use Big numbers (in TestZep component)? see: https://hackernoon.com/a-note-on-numbers-in-ethereum-and-javascript-3e6ac3b2fad9
 // - [ ] Add SevenTokens functionality
 // - [ ] Write a contract only accepts an exact payment (https://ethereum.stackexchange.com/questions/30145/how-to-write-a-contract-that-can-only-accept-a-payment-of-fixed-amount)
 // - [ ] Find a way to transalte ETH to USD or native currency...
-// - [ ] Write contract tests
-// - [ ] Write components tests
+// - [ ] How to develop with websockets...I think this requires switching to using
 
 class App extends Component {
   constructor(props) {
