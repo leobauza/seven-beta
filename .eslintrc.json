@@ -10,7 +10,8 @@
     "contract": true,
     "describe": true,
     "expect": true,
-    "it": true
+    "it": true,
+    "jest": true
   },
   "parser": "babel-eslint",
   "extends": "eslint:recommended",

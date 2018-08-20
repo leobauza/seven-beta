@@ -5,8 +5,8 @@ export default class StoreValue extends Component {
   state = {
     instance: null,
     isStoredValueUpdated: true,
-    localValue: 0,
-    storedValue: 0
+    localValue: '0',
+    storedValue: '0'
   }
 
   componentDidMount() {
@@ -32,15 +32,13 @@ export default class StoreValue extends Component {
 
     this.setState({
       instance: simpleStorage,
-      localValue: result,
-      storedValue: result
+      localValue: `${result}`,
+      storedValue: `${result}`
     })
-
-    return simpleStorage
   }
 
   handleLocalValueChange = e => {
-    this.setState({ localValue: e.target.value })
+    this.setState({ localValue: `${e.target.value}` })
   }
 
   saveValueToBlockchain = async e => {
@@ -54,10 +52,11 @@ export default class StoreValue extends Component {
     } = this.state
 
     if (localValue === storedValue || !isStoredValueUpdated) {
-      return
+      return false
     }
 
     this.updateUiBeforeTransaction()
+
     const tx = await this.sendTxWithGas()
 
     if (tx && tx.transactionHash) {
@@ -70,7 +69,7 @@ export default class StoreValue extends Component {
     const { accounts } = this.props
     const { localValue, instance } = this.state
 
-    return accounts[0]
+    return accounts && accounts[0]
       ? instance.methods[method](localValue).send({ from: accounts[0] })
       : null
   }
@@ -90,8 +89,9 @@ export default class StoreValue extends Component {
         Value {result} has been stored! tx: {tx.transactionHash}
       </p>
     )
+
     this.setState({
-      storedValue: result,
+      storedValue: `${result}`,
       isStoredValueUpdated: true
     })
   }
